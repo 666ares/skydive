@@ -287,7 +287,7 @@ func (p *Packet) TransportFlow(swap bool) (gopacket.Flow, error) {
 	if layer.LayerType() == layers.LayerTypeUDP {
 		encap := p.Layers[len(p.Layers)-1]
 
-		if encap.LayerType() == layers.LayerTypeVXLAN || encap.LayerType() == layers.LayerTypeGeneve {
+		if encap.LayerType() == layers.LayerTypeVXLAN || encap.LayerType() == layers.LayerTypeGeneve || encap.LayerType() == layers.LayerTypeGTPv1U {
 			value16 := make([]byte, 2)
 			binary.BigEndian.PutUint16(value16, uint16(layer.(*layers.UDP).DstPort))
 
@@ -295,8 +295,10 @@ func (p *Packet) TransportFlow(swap bool) (gopacket.Flow, error) {
 			value32 := make([]byte, 4)
 			if encap.LayerType() == layers.LayerTypeVXLAN {
 				binary.BigEndian.PutUint32(value32, encap.(*layers.VXLAN).VNI)
-			} else {
+			} else if encap.LayerType() == layers.LayerTypeGeneve {
 				binary.BigEndian.PutUint32(value32, encap.(*layers.Geneve).VNI)
+			} else {
+				binary.BigEndian.PutUint32(value32, encap.(*layers.GTPv1U).TEID)
 			}
 
 			if swap {
@@ -468,6 +470,9 @@ func networkID(p *Packet) int64 {
 		}
 		if layer.LayerType() == layers.LayerTypeGeneve {
 			return int64(layer.(*layers.Geneve).VNI)
+		}
+		if layer.LayerType() == layers.LayerTypeGTPv1U {
+			return int64(layer.(*layers.GTPv1U).TEID)
 		}
 	}
 	return id
@@ -1174,7 +1179,7 @@ func PacketSeqFromGoPacket(packet gopacket.Packet, outerLength int64, bpf *BPF, 
 			}
 			fallthrough
 			// We don't split on vlan layers.LayerTypeDot1Q
-		case layers.LayerTypeVXLAN, layers.LayerTypeMPLS, layers.LayerTypeGeneve:
+		case layers.LayerTypeVXLAN, layers.LayerTypeMPLS, layers.LayerTypeGeneve, layers.LayerTypeGTPv1U:
 			p := &Packet{
 				GoPacket: packet,
 				Layers:   packetLayers[topLayerIndex : i+1],
