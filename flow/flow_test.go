@@ -2241,6 +2241,82 @@ func TestVxlanSrcPort(t *testing.T) {
 	validatePCAP(t, "pcaptraces/vxlan-src-port.pcap", layers.LinkTypeEthernet, nil, expected)
 }
 
+func TestGTP(t *testing.T) {
+	expected := []*Flow{
+		{
+			UUID:        "1447008887f1c74d",
+			LayersPath:  "Ethernet/IPv4/UDP/GTPv1U",
+			Application: "GTPv1U",
+			Link: &FlowLayer{
+				Protocol: FlowProtocol_ETHERNET,
+				A:        "00:0c:29:e3:c6:4d",
+				B:        "00:0c:29:da:d1:de",
+				ID:       0,
+			},
+			Network: &FlowLayer{
+				Protocol: FlowProtocol_IPV4,
+				A:        "192.168.40.179",
+				B:        "192.168.40.178",
+				ID:       1,
+			},
+			Transport: &TransportLayer{
+				Protocol: FlowProtocol_UDP,
+				A:        2152,
+				B:        2152,
+				ID:       0,
+			},
+			Metric: &FlowMetric{
+				ABPackets: 51,
+				ABBytes:   7038,
+				BAPackets: 51,
+				BABytes:   7038,
+				Start:     1260442415441,
+				Last:      1260442465232,
+			},
+			Start:              1260442415441,
+			Last:               1260442465232,
+			TrackingID:         "2f5d208b52b5b02c",
+			L3TrackingID:       "7358035e034b0f8",
+			ParentUUID:         "",
+			RawPacketsCaptured: 0,
+		},
+		{
+			UUID:        "64a5fc6218439d58",
+			LayersPath:  "IPv4/ICMPv4",
+			Application: "ICMPv4",
+			Network: &FlowLayer{
+				Protocol: FlowProtocol_IPV4,
+				A:        "202.11.40.158",
+				B:        "192.168.40.178",
+				ID:       0,
+			},
+			ICMP: &ICMPLayer{
+				Type: ICMPType_ECHO,
+			},
+			Metric: &FlowMetric{
+				ABPackets: 51,
+				ABBytes:   4284,
+				BAPackets: 51,
+				BABytes:   4284,
+				Start:     1260442415441,
+				Last:      1260442465232,
+				RTT:       748000,
+			},
+			IPMetric: &IPMetric{
+				Fragments:      0,
+				FragmentErrors: 0,
+			},
+			Start:              1260442415441,
+			Last:               1260442465232,
+			TrackingID:         "391bc378941fdffe",
+			L3TrackingID:       "391bc378941fdffe",
+			ParentUUID:         "1447008887f1c74d",
+			RawPacketsCaptured: 0,
+		},
+	}
+	validatePCAP(t, "pcaptraces/gtp-u.pcap", layers.LinkTypeEthernet, nil, expected)
+}
+
 func TestGeneve(t *testing.T) {
 	expected := []*Flow{
 		{
