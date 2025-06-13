@@ -10,7 +10,7 @@ services:
       - skynet
 
   skydive-analyzer:
-    image: skydive/skydive
+    build: .
     ports:
       - "8082:8082"
       - "8082:8082/udp"
@@ -26,7 +26,7 @@ services:
       - skynet
 
   skydive-agent:
-    image: skydive/skydive
+    build: .
     depends_on:
       - skydive-analyzer
     network_mode: "host"
