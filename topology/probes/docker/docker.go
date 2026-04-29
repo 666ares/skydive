@@ -42,7 +42,7 @@ import (
 )
 
 // ClientAPIVersion Client API version used
-const ClientAPIVersion = "1.24"
+const ClientAPIVersion = "1.40"
 
 type containerInfo struct {
 	Pid  int
